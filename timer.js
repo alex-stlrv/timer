@@ -1,30 +1,27 @@
-var thirtySecButton = document.getElementById("thirty-sec");
-var fiveMinButton = document.getElementById("five-min");
-var fifteenMinButton = document.getElementById("fifteen-min");
-var twentyMinButton = document.getElementById("twenty-min");
-var sixtyMinButton = document.getElementById("sixty-min");
-var inputtedMinutes = document.getElementById("input-minutes");
-var reset = document.getElementById("reset");
-
-
 class Timer {
     constructor() {
         this.timeToTime = 0;
+        this.newDelay = 0;
         this.displayEl = document.getElementById("counter");
         this.backTimeEl = document.getElementById("back-time");
     }
     setSeconds(sec) {
-        this.timeToTime += sec;
-        this.start()
+        this.newDelay = sec;
+        this.incrementTimer()
     }
     setMinutes(min) {
         this.setSeconds(min*60);
     }
-    start() {
+    incrementTimer() {        
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }            
+        this.timeToTime += this.newDelay;
         this.counterFormatter();
         this.setWaitTime();
-        var that=this;
-        this.interval = setInterval(function(){that.decrementSeconds()}, 1000);
+        const that=this;
+        this.interval = setInterval(function(){that.decrementSeconds()}, 1000);     
     }
     counterFormatter() {
         const s = this.timeToTime
@@ -56,7 +53,7 @@ class Timer {
         } else {
             this.timeToTime = this.timeToTime - 1;
             this.counterFormatter();
-        }
+        }       
     };
     reset() {
         this.timeToTime = 0;
@@ -67,30 +64,42 @@ class Timer {
     }
 }
 
+var thirtySecButton = document.getElementById("thirty-sec");
 thirtySecButton.onclick = function() {
     timer.setSeconds(30);
 };
+
+var fiveMinButton = document.getElementById("five-min");
 fiveMinButton.onclick = function() {
     timer.setMinutes(5);
 };
+
+var fifteenMinButton = document.getElementById("fifteen-min");
 fifteenMinButton.onclick = function() {
     timer.setMinutes(15);
 };
+
+var twentyMinButton = document.getElementById("twenty-min");
 twentyMinButton.onclick = function() {
     timer.setMinutes(20);
 };
+
+var sixtyMinButton = document.getElementById("sixty-min");
 sixtyMinButton.onclick = function(){
     timer.setMinutes(60);
 };
+
+var inputtedMinutes = document.getElementById("input-minutes");
 inputtedMinutes.addEventListener('keydown', function (k) {
     if (k.key === "Enter") {
         timer.setMinutes(inputtedMinutes.value)
     }
 });
+
+var reset = document.getElementById("reset");
 reset.onclick = function() {
     timer.reset()
 }
-
 
 timer = new Timer();
 
