@@ -1,4 +1,3 @@
-var sec = 0;
 var thirtySecButton = document.getElementById("thirty-sec");
 var fiveMinButton = document.getElementById("five-min");
 var fifteenMinButton = document.getElementById("fifteen-min");
@@ -7,11 +6,69 @@ var sixtyMinButton = document.getElementById("sixty-min");
 var inputtedMinutes = document.getElementById("input-minutes");
 var reset = document.getElementById("reset");
 
-var counter = document.getElementById("counter");
-var backTime = document.getElementById("back-time");
+
+class Timer {
+    constructor(time, measureIsSeconds = false) {
+        this.time = time;
+        this.measureIsSeconds = measureIsSeconds;
+        this.timeToTime = measureIsSeconds ? time : time * 60;
+        this.displayEl = document.getElementById("counter");
+        this.backTimeEl = document.getElementById("back-time");
+        this.start();
+    }
+    start() {
+        this.counterFormatter();
+        this.setWaitTime();
+        var that=this;
+        this.interval = setInterval(function(){that.decrementSeconds()}, 1000);
+    }
+    counterFormatter() {
+        const s = this.timeToTime
+        let minutes = Math.floor(s/60).toString();
+        let seconds = (s%60).toString();
+        if (minutes.length === 1) {minutes = "0"+ minutes};
+        if (seconds.length === 1) {seconds = "0"+ seconds};
+        this.displayEl.textContent = `${minutes} : ${seconds}`;
+    }
+    setWaitTime() {
+        var formattedTime;
+        if (this.timeToTime === 0) {
+            formattedTime = 'HERE NOW'
+        } else {
+            const millis = this.timeToTime*1000;
+            const awaitedTime = new Date(new Date().getTime() + millis);
+            const hours = awaitedTime.getHours();
+            const minutes = awaitedTime.getMinutes();
+            const seconds = awaitedTime.getSeconds();
+            formattedTime = `BE BACK AT ${hours} h ${minutes} m ${seconds} s`;
+        }
+        this.backTimeEl.textContent = formattedTime;
+    }
+    decrementSeconds() {
+        console.log('HI')
+        console.log(this.timeToTime)
+        if (this.timeToTime === 0) {
+            this.setWaitTime();
+            clearInterval(this.interval);
+            this.interval = null;
+        } else {
+            this.timeToTime = this.timeToTime - 1;
+            this.counterFormatter();
+        }
+    };
+    reset() {
+        this.timeToTime = 0;
+        clearInterval(this.interval);
+        this.interval = null;
+        this.counterFormatter();
+        this.setWaitTime();
+    }
+}
+
+
 
 thirtySecButton.onclick = function() {
-    incrementSeconds(30, true);
+    timer = new Timer(30, true);
 };
 fiveMinButton.onclick = function() {
     incrementSeconds(5, false);
@@ -31,51 +88,10 @@ inputtedMinutes.addEventListener('keydown', function (k) {
     }
 });
 reset.onclick = function() {
-    sec = 0;
-    counterFormatter(sec);
-    setWaitTime(sec);
+    timer.reset()
 }
 
-function incrementSeconds(val, measureIsSeconds) {
-    measureIsSeconds ? sec = sec + val : sec = sec + val * 60;
-    counterFormatter(sec);
-    setWaitTime(sec);
-    
-};
 
-setInterval(decrementSeconds, 1000);
-
-function decrementSeconds() {
-    if (sec === 0) {
-        setWaitTime(sec);
-    } else {
-        sec = sec - 1;
-        counterFormatter(sec);
-    }
-};
-
-function counterFormatter(s) {
-    let minutes = Math.floor(s/60).toString();
-    let seconds = (s%60).toString()
-    minutes.length === 1 ? minutes = "0"+ minutes : minutes = minutes
-    seconds.length === 1 ? seconds = "0"+ seconds : seconds = seconds
-    formattedVal = minutes + " : "+ seconds;
-    counter.textContent = formattedVal;
-}
-
-function setWaitTime(s) {
-    if (s === 0) {
-        formattedTime = 'HERE NOW'
-    } else {
-        const millis = s*1000;
-        awaitedTime = new Date(new Date().getTime() + millis);
-        const hours = awaitedTime.getHours();
-        const minutes = awaitedTime.getMinutes();
-        const seconds = awaitedTime.getSeconds();
-        formattedTime = 'BE BACK AT ' + hours + "h "+ minutes + "m " + seconds + "s";
-    }
-    backTime.textContent = formattedTime;
-}
 
 
 
