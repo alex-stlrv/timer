@@ -66,6 +66,8 @@ class Timer {
     }
 }
 
+const timer = new Timer();
+
 var thirtySecButton = document.getElementById("thirty-sec");
 thirtySecButton.onclick = function() {
     timer.setSeconds(30);
@@ -102,8 +104,6 @@ var reset = document.getElementById("reset");
 reset.onclick = function() {
     timer.reset()
 }
-
-timer = new Timer();
 
 
 
